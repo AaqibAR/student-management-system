@@ -1,0 +1,22 @@
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+application-local.properties
+application-local.yml
+application-local.yaml
+
+# Frontend dependencies and build output
+node_modules/
+.next/
+out/
+
+# Backend build output
+target/
+*.class
+
+# Editor and operating system files
+.idea/
+.vscode/
+.DS_Store
+*.log
