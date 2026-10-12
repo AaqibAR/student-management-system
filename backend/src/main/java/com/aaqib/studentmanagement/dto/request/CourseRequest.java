@@ -1,4 +1,4 @@
-package com.aaqib.studentmanagement.dto;
+package com.aaqib.studentmanagement.dto.request;
 
 import jakarta.validation.constraints.*;
 

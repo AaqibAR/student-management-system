@@ -1,4 +1,4 @@
-package com.aaqib.studentmanagement.dto;
+package com.aaqib.studentmanagement.dto.response;
 
 import com.aaqib.studentmanagement.entity.Course;
 import java.time.OffsetDateTime;

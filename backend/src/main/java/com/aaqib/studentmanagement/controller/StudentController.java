@@ -1,7 +1,7 @@
 package com.aaqib.studentmanagement.controller;
 
-import com.aaqib.studentmanagement.dto.StudentRequest;
-import com.aaqib.studentmanagement.dto.StudentResponse;
+import com.aaqib.studentmanagement.dto.request.StudentRequest;
+import com.aaqib.studentmanagement.dto.response.StudentResponse;
 import com.aaqib.studentmanagement.service.StudentService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

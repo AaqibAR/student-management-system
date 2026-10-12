@@ -1,7 +1,7 @@
 package com.aaqib.studentmanagement.service;
 
-import com.aaqib.studentmanagement.dto.CourseRequest;
-import com.aaqib.studentmanagement.dto.CourseResponse;
+import com.aaqib.studentmanagement.dto.request.CourseRequest;
+import com.aaqib.studentmanagement.dto.response.CourseResponse;
 import com.aaqib.studentmanagement.entity.Course;
 import com.aaqib.studentmanagement.repository.CourseRepository;
 import org.springframework.dao.DataIntegrityViolationException;
