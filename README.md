@@ -5,18 +5,20 @@ Spring Boot, and Supabase PostgreSQL.
 
 ## Current Status
 
-Day 1: Planning and environment setup completed.
+## Current Status
 
-- GitHub repository initialized
-- Next.js frontend initialized and run locally
-- Spring Boot backend initialized and compiled
-- Supabase PostgreSQL project created
-- Backend database connection configured
-- Backend health endpoint verified with status UP
-- Environment variable templates added
+Days 1 and 2 completed: environment setup, database tables,
+entities, repositories, and Students/Courses CRUD APIs.
 
-Student and course features, frontend API integration, and authentication
-are not yet implemented.
+- Next.js frontend initialized
+- Spring Boot backend connected to Supabase PostgreSQL
+- Students, Courses, and Users tables created with RLS enabled
+- Students and Courses CRUD APIs verified using Postman
+- Basic validation and duplicate prevention implemented
+
+Frontend integration and authentication remain for later stages.
+
+See [Day 2 API and Test Results](docs/day-2-testing.md).
 
 ## Project Structure
 
@@ -62,6 +64,17 @@ Open http://localhost:3000.
 The API base URL is configured through NEXT_PUBLIC_API_BASE_URL.
 API calls will be implemented in a later stage.
 
+## Database Setup
+
+For a fresh Supabase database, run
+backend/sql/001_create_tables.sql in the Supabase SQL Editor.
+
+The script creates the app schema, three tables, and enables RLS.
+Run it once; it is not intended to recreate existing tables.
+
+Spring Boot uses Hibernate validation to check the entity mappings
+against the existing database schema.
+
 ## Run the Backend
 
 From the repository root, in a separate macOS zsh terminal:
@@ -100,7 +113,8 @@ It may also list liveness and readiness groups.
 
 ## Configuration Notes
 
-- Database schema generation is disabled for Day 1.
+- Database tables are created through the saved SQL script.
+- Hibernate validates the schema without modifying it.
 - Database credentials must remain outside source control.
 - Only placeholder environment templates are committed.
 - NEXT_PUBLIC_ variables are browser-visible; never store secrets in them.
