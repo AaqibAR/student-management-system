@@ -5,18 +5,15 @@ Spring Boot, and Supabase PostgreSQL.
 
 ## Current Status
 
-## Current Status
+Days 1 and 2 completed. Day 3 frontend implemented:
 
-Days 1 and 2 completed: environment setup, database tables,
-entities, repositories, and Students/Courses CRUD APIs.
-
-- Next.js frontend initialized
-- Spring Boot backend connected to Supabase PostgreSQL
-- Students, Courses, and Users tables created with RLS enabled
-- Students and Courses CRUD APIs verified using Postman
-- Basic validation and duplicate prevention implemented
-
-Frontend integration and authentication remain for later stages.
+- Dashboard displays student and course totals from the backend
+- Students and Courses support listing, adding, editing, and deleting
+- Forms validate input and display duplicate-record errors
+- API requests include loading, error, and success states
+- Shared navigation and responsive layouts implemented
+- Login layout created; authentication is scheduled for Day 4
+- Backend CORS configured for the frontend origin
 
 See [Day 2 API and Test Results](docs/day-2-testing.md).
 
@@ -62,7 +59,8 @@ npm run dev
 Open http://localhost:3000.
 
 The API base URL is configured through NEXT_PUBLIC_API_BASE_URL.
-API calls will be implemented in a later stage.
+Run the backend alongside the frontend to load and manage records.
+The home page redirects to /dashboard.
 
 ## Database Setup
 
