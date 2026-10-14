@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode, MouseEvent } from "react";
 import Icon, { type IconName } from "@/components/Icon";
+import { useAuth } from "@/components/AuthProvider";
 
 const navigation: { href: string; label: string; icon: IconName }[] = [
   { href: "/dashboard", label: "Overview", icon: "grid" },
@@ -12,6 +13,8 @@ const navigation: { href: string; label: string; icon: IconName }[] = [
 ];
 
 export default function AppShell({ children }: { children: ReactNode }) {
+  const { user, isAdmin, signOut, signingOut, signOutError } = useAuth();
+  const initials = user.name.trim().split(/\s+/).slice(0, 2).map((part) => part.slice(0, 1)).join("").toUpperCase();
   const pathname = usePathname();
   const currentPage =
     navigation.find((item) => pathname === item.href)?.label ??
@@ -64,18 +67,15 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <p className="sidebar-label">WORKSPACE</p>
         <nav aria-label="Main navigation">{links()}</nav>
         <div className="sidebar-bottom">
-          <div className="sidebar-note">
-            <Icon name="layers" />
-            <p>
-              A little more organized.
-              <span>One place for your academic records.</span>
-            </p>
+          <div className="sidebar-account">
+            <span className="account-avatar">{initials}</span>
+            <div><strong>{user.name}</strong><span>{user.email}</span><small>{isAdmin ? "Administrator" : "View access"}</small></div>
           </div>
-          <Link className="sidebar-signin" href="/login">
-            <Icon name="login" />
-            <span>Sign in</span>
+          <button className="sidebar-signin" type="button" disabled={signingOut} onClick={signOut}>
+            <Icon name="logout" />
+            <span>{signingOut ? "Signing out…" : "Sign out"}</span>
             <Icon name="arrow" width="16" height="16" />
-          </Link>
+          </button>
         </div>
       </aside>
       <div className="workspace-body">
@@ -85,9 +85,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
             <Icon name="chevron" width="14" height="14" />
             <strong>{currentPage}</strong>
           </div>
-          <Link href="/login" className="topbar-signin">
-            Sign in <Icon name="arrow" width="15" height="15" />
-          </Link>
+          <div className="topbar-account"><span className="role-badge">{isAdmin ? "Admin" : "View access"}</span><span className="account-avatar">{initials}</span><span className="account-name">{user.name}</span></div>
           <details className="workspace-mobile-menu">
             <summary aria-label="Toggle navigation">
               <Icon name="menu" />
@@ -95,17 +93,19 @@ export default function AppShell({ children }: { children: ReactNode }) {
             </summary>
             <nav aria-label="Mobile navigation">
               {links(true)}
-              <Link
+              <button
                 className="workspace-nav-link"
-                href="/login"
-                onClick={closeMobileMenu}
+                type="button"
+                onClick={signOut}
+                disabled={signingOut}
               >
-                <Icon name="login" />
-                Sign in
-              </Link>
+                <Icon name="logout" />
+                {signingOut ? "Signing out…" : "Sign out"}
+              </button>
             </nav>
           </details>
         </header>
+        {signOutError && <p role="alert" className="auth-shell-error">{signOutError}</p>}
         <div id="page-content" tabIndex={-1} className="workspace-content">
           {children}
         </div>

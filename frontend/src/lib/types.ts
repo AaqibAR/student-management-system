@@ -31,3 +31,22 @@ export interface CourseInput {
   description?: string;
   credits: number;
 }
+
+export interface UserAccount {
+  id: number;
+  name: string;
+  email: string;
+  role: "USER" | "ADMIN";
+}
+
+export interface Session {
+  user: UserAccount;
+  expiresAt: number;
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  tokenType: string;
+  expiresIn: number;
+  user: UserAccount;
+}

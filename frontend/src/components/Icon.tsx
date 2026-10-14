@@ -14,6 +14,10 @@ const paths = {
   chevron: "m9 5 7 7-7 7",
   menu: "M4 6h16 M4 12h16 M4 18h16",
   warning: "m12 3 10 18H2z M12 9v5 M12 17h.01",
+  logout: "M9 5H5v14h4 M13 3h6v18h-6 M8 12h9 M11 9l-3 3 3 3",
+  lock: "M6 10h12v11H6z M8 10V7a4 4 0 0 1 8 0v3 M12 14v3",
+  eye: "M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12z M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0",
+  check: "m5 12 4 4L19 6",
 } as const;
 
 export type IconName = keyof typeof paths;
