@@ -5,17 +5,19 @@ Spring Boot, and Supabase PostgreSQL.
 
 ## Current Status
 
-Days 1 and 2 completed. Day 3 frontend implemented:
+Days 1–3 completed. Day 4 authentication implemented:
 
-- Dashboard displays student and course totals from the backend
+- Dashboard displays saved student and course totals and recent records
 - Students and Courses support listing, adding, editing, and deleting
-- Forms validate input and display duplicate-record errors
-- API requests include loading, error, and success states
-- Shared navigation and responsive layouts implemented
-- Login layout created; authentication is scheduled for Day 4
-- Backend CORS configured for the frontend origin
+- Registration and login use BCrypt passwords and signed JWT access tokens
+- USER accounts can view records; ADMIN accounts can create, edit, and delete
+- Protected frontend pages, HttpOnly session cookies, logout, and expiry handling
+- Login and registration pages match the shared workspace design
+- Validated inputs and structured API error responses
+- 48 backend tests and 13 frontend HTTP integration test groups passed
 
-See [Day 2 API and Test Results](docs/day-2-testing.md).
+See [Day 2 API and Test Results](docs/day-2-testing.md) and
+[Day 4 Authentication and Testing](docs/day-4-auth-testing.md).
 
 ## Project Structure
 
@@ -58,9 +60,14 @@ npm run dev
 
 Open http://localhost:3000.
 
-The API base URL is configured through NEXT_PUBLIC_API_BASE_URL.
-Run the backend alongside the frontend to load and manage records.
-The home page redirects to /dashboard.
+The backend URL is configured through NEXT_PUBLIC_API_BASE_URL.
+API_BASE_URL can optionally override it for server-side requests.
+Run the backend alongside the frontend. Browser requests use Next.js
+route handlers, which forward the session JWT to Spring Boot.
+
+Visit /register to create an account or /login to sign in.
+New accounts have USER view access. The home page redirects to
+/dashboard; unauthenticated workspace requests redirect to /login.
 
 ## Database Setup
 
@@ -92,11 +99,14 @@ export DB_URL='jdbc:postgresql://YOUR_SESSION_POOLER_HOST:5432/postgres?sslmode=
 export DB_USERNAME='postgres.YOUR_PROJECT_REF'
 read -s "DB_PASSWORD?Enter your Supabase database password: "
 export DB_PASSWORD
+export JWT_SECRET="$(openssl rand -base64 32)"
 ./mvnw spring-boot:run
 ```
 
-The password prompt hides input. Environment variables apply to the
-current terminal session and must be supplied again in a new session.
+The password prompt hides input. Generate JWT_SECRET once per terminal
+session and reuse it when restarting the backend. Changing the secret
+invalidates existing tokens, so sign in again afterward. Environment
+variables must be supplied again in a new terminal session.
 
 backend/.env.example documents the required variables.
 Spring Boot does not automatically load this template.
@@ -108,6 +118,25 @@ Spring Boot does not automatically load this template.
 
 The health response should contain "status":"UP".
 It may also list liveness and readiness groups.
+Protected backend API endpoints return 401 without a valid Bearer token.
+Sign in through the frontend to load records.
+
+## Roles and Validation
+
+Public registration always assigns USER. To test ADMIN access, promote
+one chosen account in Supabase, then sign out and sign in again:
+
+```sql
+UPDATE app.users
+SET role = 'ADMIN'
+WHERE email = LOWER('YOUR_REGISTERED_EMAIL')
+RETURNING id, name, email, role;
+```
+
+Use disposable records for create, edit, and delete checks.
+The backend tests use mocked database access; frontend integration tests
+use a test-only API fixture. See the Day 4 testing document for commands
+and the live browser checklist.
 
 ## Configuration Notes
 
@@ -115,6 +144,9 @@ It may also list liveness and readiness groups.
 - Hibernate validates the schema without modifying it.
 - Database credentials must remain outside source control.
 - Only placeholder environment templates are committed.
+- JWT_SECRET belongs to the backend environment and is never sent to the frontend.
+- Production frontend cookies require HTTPS.
+- Set APP_ORIGIN to the public frontend origin when deploying behind a proxy.
 - NEXT_PUBLIC_ variables are browser-visible; never store secrets in them.
 
 ## Commit Convention

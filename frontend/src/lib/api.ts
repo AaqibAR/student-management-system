@@ -1,10 +1,8 @@
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
-
 export class ApiError extends Error {
   constructor(
     public readonly status: number,
     message: string,
+    public readonly fields: Record<string, string> = {},
   ) {
     super(message);
     this.name = "ApiError";
@@ -28,12 +26,17 @@ export async function apiRequest<T>(
 
   let response: Response;
 
+  const localPath = /^\/api\/(students|courses)(\/\d+)?$/.test(path)
+    ? path.replace("/api/", "/api/data/")
+    : path;
+
   try {
-    response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}${path}`, {
+    response = await fetch(localPath, {
       ...options,
       headers,
       signal,
       cache: "no-store",
+      credentials: "same-origin",
     });
   } catch (error) {
     if (options.signal?.aborted) {
@@ -54,10 +57,24 @@ export async function apiRequest<T>(
       409: "A record with these identifying details already exists.",
     };
 
-    throw new ApiError(
-      response.status,
-      messages[response.status] ?? "The request failed. Please try again.",
-    );
+    let detail = messages[response.status] ?? "The request failed. Please try again.";
+    const fields: Record<string, string> = {};
+    try {
+      const problem: unknown = await response.json();
+      if (problem && typeof problem === "object") {
+        const data = problem as { detail?: unknown; errors?: unknown };
+        if (typeof data.detail === "string") detail = data.detail;
+        if (data.errors && typeof data.errors === "object") {
+          for (const [field, message] of Object.entries(data.errors)) {
+            if (typeof message === "string") fields[field] = message;
+          }
+        }
+      }
+    } catch { /* Keep the status-specific message when the body is not JSON. */ }
+    if (response.status === 401 && localPath.startsWith("/api/data/") && typeof window !== "undefined") {
+      window.dispatchEvent(new Event("auth:expired"));
+    }
+    throw new ApiError(response.status, detail, fields);
   }
 
   if (response.status === 204) {
