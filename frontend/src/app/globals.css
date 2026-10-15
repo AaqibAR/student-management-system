@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./records.css";
 
 :root {
   color-scheme: light;

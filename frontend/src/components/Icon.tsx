@@ -18,6 +18,12 @@ const paths = {
   lock: "M6 10h12v11H6z M8 10V7a4 4 0 0 1 8 0v3 M12 14v3",
   eye: "M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12z M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0",
   check: "m5 12 4 4L19 6",
+  search: "M21 21l-5-5 M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0",
+  close: "m6 6 12 12 M6 18 18 6",
+  edit: "m16 3 5 5-12 12-6 1 1-6z M13 6l5 5",
+  trash: "M3 6h18 M9 6V3h6v3 M5 6l1 15h12l1-15 M10 10v7 M14 10v7",
+  mail: "M3 5h18v14H3z m0 0 9 8 9-8",
+  phone: "M7 3H3c0 10 8 18 18 18v-4l-5-2-2 2a15 15 0 0 1-7-7l2-2z",
 } as const;
 
 export type IconName = keyof typeof paths;
