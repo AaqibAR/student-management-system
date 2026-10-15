@@ -15,9 +15,14 @@ Days 1–3 completed. Day 4 authentication implemented:
 - Login and registration pages match the shared workspace design
 - Validated inputs and structured API error responses
 - 48 backend tests and 13 frontend HTTP integration test groups passed
+- Students and Courses share search, sorting, pagination, responsive record cards,
+  add/edit dialogs, field errors, and delete confirmations
 
 See [Day 2 API and Test Results](docs/day-2-testing.md) and
 [Day 4 Authentication and Testing](docs/day-4-auth-testing.md).
+
+See [Record Management Improvements](docs/record-management-improvements.md)
+for the UI changes, automated checks, and remaining visual checklist.
 
 ## Project Structure
 

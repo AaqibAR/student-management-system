@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:records": "node --test tests/records.test.mjs tests/records.ui.test.cjs"
   },
   "dependencies": {
     "next": "16.4.0",
@@ -20,6 +21,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.0",
+    "jsdom": "26.1.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

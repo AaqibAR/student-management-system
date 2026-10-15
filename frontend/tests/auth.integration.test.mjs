@@ -94,7 +94,7 @@ test("USER pages show view access and API writes remain forbidden even with a fo
   for (const path of ["/students", "/courses"]) {
     const html = await (await request(path, { cookie: viewer.cookie })).text();
     assert.ok(html.includes("You have view access."));
-    assert.ok(!html.includes('>Add student</h2>') && !html.includes('>Add course</h2>'));
+    assert.ok(!html.includes('aria-label="Add student"') && !html.includes('aria-label="Add course"'));
   }
   for (const path of ["/api/data/students", "/api/data/courses"]) {
     assert.equal((await request(path, { cookie: viewer.cookie })).status, 200);
@@ -109,7 +109,7 @@ test("ADMIN can create, update, read and delete a student and a course", async (
   for (const path of ["/students", "/courses"]) {
     const html = await (await request(path, { cookie })).text();
     assert.ok(!html.includes("You have view access."));
-    assert.ok(html.includes(path === "/students" ? "Add student" : "Add course"));
+    assert.ok(html.includes(path === "/students" ? 'aria-label="Add student"' : 'aria-label="Add course"'));
   }
   const fixtures = [
     ["students", { studentNumber: "TEST002", firstName: "New", lastName: "Student", email: "new.student@example.test" }],
