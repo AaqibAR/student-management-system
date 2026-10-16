@@ -132,7 +132,9 @@ logout, expiry, forged tokens, and backend outage recovery.
 Browser automation was unavailable during preparation. Use the local browser checklist
 below to verify form interactions, animation, desktop/mobile layout, and multi-tab behavior.
 
-To reproduce the HTTP checks with Node 22, open three terminals from frontend/:
+The release preparation adds `npm run test:auth` to start and stop the fixture
+and Next server automatically after `npm run build`. The manual three-terminal
+commands below remain available from frontend/:
 
 ```bash
 # Terminal 1: test-only backend; this is separate from the real Spring server.
@@ -142,7 +144,7 @@ node tests/mock-auth-backend.mjs
 ```bash
 # Terminal 2: production Next.js app pointed at the test-only backend.
 npm run build
-API_BASE_URL=http://127.0.0.1:8181 npm run start -- -p 3030
+API_BASE_URL=http://127.0.0.1:8181 APP_ORIGIN=http://localhost:3030 npm run start -- --hostname 127.0.0.1 --port 3030
 ```
 
 ```bash

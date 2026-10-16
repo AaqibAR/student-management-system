@@ -57,6 +57,10 @@ The records suite covers search, natural ordering, pagination boundaries,
 USER controls, ADMIN creation/editing/deletion, validation/focus, preserved
 input, duplicate errors, retry, and pending-request behavior.
 
+After `npm run build`, `npm run test:auth` runs the 13 auth HTTP groups and
+automatically manages its fixture servers. The equivalent manual commands
+remain below.
+
 The existing 13 auth HTTP integration groups also run against the production
 Next server and test-only API fixture. Use separate terminals in `frontend`:
 

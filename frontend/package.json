@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:records": "node --test tests/records.test.mjs tests/records.ui.test.cjs"
+    "test:records": "node --test tests/records.test.mjs tests/records.ui.test.cjs",
+    "test:auth": "node tests/run-auth-integration.mjs"
   },
   "dependencies": {
     "next": "16.4.0",
@@ -24,5 +25,8 @@
     "jsdom": "26.1.0",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": "22.x"
   }
 }

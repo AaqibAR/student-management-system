@@ -1,0 +1,13 @@
+# Send only build inputs to Docker; local credentials and build output stay out.
+**
+!pom.xml
+!mvnw
+!.mvn/
+!.mvn/**
+!src/
+!src/main/
+!src/main/**
+**/application-local.*
+**/.env*
+**/*.pem
+**/*.key
