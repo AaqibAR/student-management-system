@@ -1,8 +1,20 @@
 # Deployment guide
 
-Prepared route: Vercel for Next.js, Render for the Dockerized Spring Boot API,
-and the existing Supabase PostgreSQL database. No public deployment has been
-created yet. This guide targets the production deployment on `main`.
+Production uses Vercel for Next.js, Render for the Dockerized Spring Boot API,
+and the existing Supabase PostgreSQL database. This guide targets `main`.
+
+## Current deployment
+
+| Component | Public URL |
+|---|---|
+| Frontend | https://student-management-system-henna-rho.vercel.app |
+| Backend | https://student-management-api-pqza.onrender.com |
+| Backend health | https://student-management-api-pqza.onrender.com/actuator/health |
+
+The deployed application commit is `a274732`, merged through release PR #1.
+Read-only live checks passed on 2026-10-16, and the production ADMIN dashboard
+was shown loading records. See [release-checklist.md](release-checklist.md) for
+the evidence and remaining manual verification.
 
 ## 1. Review and merge the release PR
 
@@ -92,6 +104,17 @@ In Vercel → project Settings → Environment Variables, set these for
 Replace both examples with the actual assigned domains; no trailing slashes.
 `API_BASE_URL` is server-only. No `NEXT_PUBLIC_` variable is required, and no
 database password, Supabase service key, or JWT signing key belongs in Vercel.
+
+The current production values are:
+
+```dotenv
+API_BASE_URL=https://student-management-api-pqza.onrender.com
+APP_ORIGIN=https://student-management-system-henna-rho.vercel.app
+```
+
+Render's `FRONTEND_URL` uses that same frontend origin, without `/login` or a
+trailing slash. These are public service addresses; database credentials and
+the generated signing secret remain in Render's environment settings.
 
 Redeploy the frontend after saving variables, then use the stable production
 URL for testing. If you change domains, update `APP_ORIGIN` in Vercel and

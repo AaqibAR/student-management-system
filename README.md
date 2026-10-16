@@ -6,10 +6,11 @@ JWT authentication separates USER view access from ADMIN management access.
 
 ## Status and deliverables
 
-The core application and UI improvements are implemented. Release documentation,
-Docker configuration, a Render Blueprint, and automated GitHub checks are
-prepared. Public deployment and the final browser checklist remain to be
-completed; this repository does not yet claim a verified live deployment.
+The application is deployed on Vercel and Render, using the existing Supabase
+PostgreSQL database. Backend health and anonymous-access checks passed on
+2026-10-16; the production ADMIN dashboard was shown loading student records.
+The remaining role, CRUD, mobile, and session checks are tracked in the
+[release checklist](docs/release-checklist.md).
 
 | Item | State |
 |---|---|
@@ -18,8 +19,10 @@ completed; this repository does not yet claim a verified live deployment.
 | JWT, BCrypt, roles, validation and safe errors | Implemented |
 | Responsive record cards, dialogs, search/sort/paging | Implemented |
 | Automated test coverage | 48 backend tests, 17 record tests, 13 frontend HTTP integration groups |
-| Frontend production URL | Pending deployment |
-| Backend production / health URL | Pending deployment |
+| Frontend production URL | [Open the application](https://student-management-system-henna-rho.vercel.app) |
+| Backend production URL | https://student-management-api-pqza.onrender.com |
+| Backend health URL | [Health endpoint](https://student-management-api-pqza.onrender.com/actuator/health) |
+| Deployed application commit | `a274732` (merged release PR #1) |
 
 The assignment explicitly lists Days 1–4 and then section **6. Final
 Deliverables**. See the [release checklist](docs/release-checklist.md) for the
@@ -50,7 +53,7 @@ remaining handover work and current verification evidence.
 | `backend/` | Spring Boot API, Spring Security, JPA entities and repositories |
 | `backend/sql/` | Initial database schema for a fresh project |
 | `docs/` | Architecture, testing, deployment and release documentation |
-| `render.yaml` | Prepared Docker backend service configuration |
+| `render.yaml` | Render Docker backend service configuration |
 | `.github/workflows/verify.yml` | Automated frontend/backend checks and Docker build |
 
 ## Local setup
@@ -165,8 +168,8 @@ actual browser appearance or native dialog behavior: complete the manual
 
 ## Production configuration
 
-Follow the [deployment guide](docs/deployment.md) after reviewing/merging the
-release PR. Use Vercel root directory `frontend` and Render's Docker Blueprint.
+Follow the [deployment guide](docs/deployment.md) to reproduce the hosting setup.
+Use Vercel root directory `frontend` and Render's Docker Blueprint.
 The backend remains connected to the existing Supabase project.
 
 | Where | Variables |
@@ -177,4 +180,5 @@ The backend remains connected to the existing Supabase project.
 Keep real secrets out of source control and `NEXT_PUBLIC_` variables. The frontend
 needs no signing secret or database password. Production cookies require HTTPS.
 The Render Free service can sleep when idle; see the documented wake-up behavior
-before a demo. Fill the public deployment links above only after live testing.
+before a demo. The public links above were checked on 2026-10-16; the release
+checklist distinguishes confirmed behavior from remaining manual checks.
