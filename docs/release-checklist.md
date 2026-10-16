@@ -20,13 +20,19 @@ Deliverables**. That section number is not a separate Day 6 assignment.
 | Check | Latest release-preparation result |
 |---|---|
 | 48 focused backend tests | Passed locally on 2026-10-16 (0 failures/errors) |
-| Executable backend JAR | Local packaging blocked by missing cached Maven plugin POM and unavailable Maven Central DNS; verify hosted CI result |
+| Executable backend JAR | Passed in GitHub Actions on 2026-10-16 |
 | Frontend lint | Passed locally on 2026-10-16 |
 | 17 record helper / DOM tests | Passed locally on 2026-10-16 |
 | Next.js production build / TypeScript | Passed locally on 2026-10-16 |
 | 13 auth HTTP integration groups using the new runner | Passed locally on 2026-10-16; runner also rejects occupied ports without stopping existing servers |
 | Render Blueprint schema | Passed the current official JSON Schema locally on 2026-10-16 |
-| Docker image build | Not run locally: Docker engine is unavailable; CI build is configured |
+| Docker image build | Passed in GitHub Actions on 2026-10-16 |
+
+[Hosted verification run](https://github.com/AaqibAR/student-management-system/actions/runs/38849538037)
+passed both jobs for application/configuration commit `8eda512`. Local JAR
+packaging had been blocked by a missing cached plugin POM and Maven Central DNS;
+the hosted packaging and Docker build completed successfully. Docker was not
+run on the local machine.
 
 Frontend checks use test-only fixtures; the focused backend tests mock database
 access. They do not prove deployed database connectivity. The complete backend

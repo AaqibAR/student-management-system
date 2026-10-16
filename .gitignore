@@ -1,6 +1,4 @@
 # Local configuration and credentials
-.env
-.env.*
 !.env.example
 application-local.properties
 application-local.yml
@@ -17,6 +15,6 @@ target/
 
 # Editor and operating system files
 .idea/
-.vscode/
 .DS_Store
 *.log
+config.bat
