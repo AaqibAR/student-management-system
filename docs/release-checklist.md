@@ -7,13 +7,13 @@ Deliverables**. That section number is not a separate Day 6 assignment.
 
 | Required item | Current state | Evidence / next step |
 |---|---|---|
-| Full stack system | Implemented; final live verification pending | CRUD, dashboard, USER/ADMIN roles, validation, and responsive record management |
-| Next.js frontend | Implemented | `frontend/` |
-| Spring Boot REST API | Implemented | `backend/`; auth and CRUD endpoint tables in the testing docs |
-| Supabase integration | Configured and exercised locally | `app` schema and JPA; deployment must use the same configured database |
-| Authentication | Implemented | BCrypt, signed JWTs, HttpOnly frontend session cookie, logout and expiry |
-| Deployed application links | Pending | Deploy after reviewing/merging the release PR |
-| Complete documentation | Updated for review | README, architecture, deployment, testing, and this checklist |
+| Full stack system | Deployed; detailed manual checks pending | Production ADMIN dashboard shown loading student records |
+| Next.js frontend | Deployed on Vercel | Public production URL below; login page returns 200 |
+| Spring Boot REST API | Deployed on Render | Health returns 200 with `UP`; anonymous students/courses return 401 |
+| Supabase integration | Exercised in production | Backend health and dashboard data confirm connectivity to the existing database |
+| Authentication | Deployed; remaining role/session checks pending | Production ADMIN dashboard confirmed; anonymous session denied |
+| Deployed application links | Recorded and checked | Frontend, backend, and health URLs below |
+| Complete documentation | Live links and evidence recorded | README, architecture, deployment, testing, and this checklist |
 
 ## Automated evidence
 
@@ -29,13 +29,16 @@ Deliverables**. That section number is not a separate Day 6 assignment.
 | Docker image build | Passed in GitHub Actions on 2026-10-16 |
 
 [Hosted verification run](https://github.com/AaqibAR/student-management-system/actions/runs/38849538037)
-passed both jobs for application/configuration commit `8eda512`. Local JAR
+passed both jobs for application/configuration commit `8eda512`.
+[Verification on merged main](https://github.com/AaqibAR/student-management-system/actions/runs/38852159082)
+also passed both jobs for deployed commit `a274732`. Local JAR
 packaging had been blocked by a missing cached plugin POM and Maven Central DNS;
 the hosted packaging and Docker build completed successfully. Docker was not
 run on the local machine.
 
 Frontend checks use test-only fixtures; the focused backend tests mock database
-access. They do not prove deployed database connectivity. The complete backend
+access. Those automated tests do not prove deployed database connectivity; the
+separate live checks below cover the running deployment. The complete backend
 context test still requires the database and JWT environment variables.
 
 Run frontend checks from `frontend`:
@@ -61,10 +64,10 @@ adding a workflow does not mean the hosted checks have passed.
 
 ## Review and merge
 
-- [ ] Review the complete PR against `main`, including earlier frontend/auth/UI work.
-- [ ] Confirm both GitHub Actions jobs pass and address any build findings.
+- [x] Release [PR #1](https://github.com/AaqibAR/student-management-system/pull/1) merged into `main` as `a274732` on 2026-10-16.
+- [x] Both GitHub Actions jobs passed on merged `main` (run linked above).
+- [x] Merged `main` was pulled into the local working repository.
 - [ ] Complete or record the remaining manual checks below.
-- [ ] Mark the draft PR ready, merge into `main`, and pull the merged branch locally.
 
 ## Local browser verification
 
@@ -84,25 +87,45 @@ disposable records and check each item you actually verify:
 
 ## Production verification
 
-Follow [deployment.md](deployment.md), then complete:
+Evidence recorded on 2026-10-16:
 
-- [ ] Render health returns 200 with `UP`; anonymous students/courses return 401.
-- [ ] Vercel uses the exact production origin and correct API URL, with HTTPS cookies.
+| Live check | Result / evidence |
+|---|---|
+| `GET /actuator/health` on Render | HTTP 200; `{"groups":["liveness","readiness"],"status":"UP"}` |
+| Anonymous `GET /api/students` and `/api/courses` on Render | Both HTTP 401; sign-in required |
+| `GET /login` on the production frontend | HTTP 200 |
+| Anonymous `GET /dashboard` | Next.js response contains the redirect to `/login`; streamed HTML includes a refresh redirect |
+| Anonymous `GET /api/auth/session` | HTTP 401, `Cache-Control: no-store`; clears the session cookie with Secure, HttpOnly, and SameSite=Lax attributes |
+| Vercel production environment and redeploy | User screenshots show Production `API_BASE_URL` / `APP_ORIGIN` entries and the new deployment marked Ready |
+| Production ADMIN dashboard | User screenshot shows the production `/dashboard`, ADMIN role, and existing student records |
+
+The dashboard evidence comes from the user's browser screenshot, not an
+automated authenticated browser run. The anonymous response confirms cookie
+clearing attributes; inspecting an issued login cookie and the remaining
+authenticated flows still needs the checks below.
+
+Follow [deployment.md](deployment.md), then finish:
+
+- [x] Render health returns 200 with `UP`; anonymous students/courses return 401.
+- [x] Production frontend redeployed and ADMIN dashboard loads records.
+- [x] Anonymous frontend session is denied and workspace response redirects to login.
+- [ ] Inspect the issued login cookie in the browser: Secure, HttpOnly, SameSite=Lax.
 - [ ] USER and ADMIN flows work on the deployed system, including persistence.
 - [ ] Mobile navigation/forms and session behavior work at the production URL.
 - [ ] Free-tier wake-up behavior is understood and the backend is ready before the demo.
 - [ ] Confirm real credentials are absent from Git, screenshots, and submitted documentation.
-- [ ] Record the verified public links and final commit below and in the root README.
+- [x] Record the verified public links and deployed application commit below and in the root README.
 
 ## Submission record
 
 | Item | Value |
 |---|---|
 | Repository | https://github.com/AaqibAR/student-management-system |
-| Frontend production URL | Pending deployment |
-| Backend health URL | Pending deployment |
-| Final merged commit | Pending merge |
-| Live verification date | Pending |
+| Frontend production URL | https://student-management-system-henna-rho.vercel.app |
+| Backend production URL | https://student-management-api-pqza.onrender.com |
+| Backend health URL | https://student-management-api-pqza.onrender.com/actuator/health |
+| Deployed application commit | `a274732f10bd6b83c14861ce7e5c496dd7a52990` |
+| Live verification date | 2026-10-16 (read-only HTTP checks and user-provided ADMIN dashboard screenshot) |
 
 Provide these public links and the repository documentation for handover.
 Share any demo-account credentials separately through the intended private channel.
