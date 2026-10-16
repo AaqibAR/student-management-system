@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Student Management frontend
 
-## Getting Started
+Next.js 16.4, React 19.3, TypeScript, and Tailwind CSS. Use Node.js 22.
 
-First, run the development server:
+## Local setup
 
 ```bash
+npm ci
+cp .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Set `API_BASE_URL` to the Spring API origin and `APP_ORIGIN` to the exact
+frontend origin, without a trailing slash. Defaults in the example use
+localhost:8080 and localhost:3000. Run Spring Boot in a separate terminal.
+Older `.env.local` files with `NEXT_PUBLIC_API_BASE_URL` still work as a fallback;
+`API_BASE_URL` takes precedence.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The browser calls Next.js `/api/auth/*` and `/api/data/*` routes. Next.js keeps
+the backend JWT in an HttpOnly cookie and relays it as a Bearer header. Never
+put database credentials or JWT_SECRET in this application.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Pages
 
-## Learn More
+- `/login`, `/register`: public authentication forms.
+- `/dashboard`: protected overview with live totals and recent records.
+- `/students`, `/courses`: protected record lists with search, sorting, paging,
+  responsive cards, and ADMIN-only add/edit/delete dialogs.
 
-To learn more about Next.js, take a look at the following resources:
+Registration creates USER accounts. Spring Boot enforces all permissions.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Checks
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run test:records
+npm run lint
+npm run build
+npm run test:auth
+```
 
-## Deploy on Vercel
+`test:auth` requires a completed production build. It starts and stops its own
+loopback-only mock backend and Next server. Ports 8181 and 3030 must be unused;
+set `AUTH_TEST_BACKEND_PORT` and `AUTH_TEST_APP_PORT` to use other local ports.
+It does not connect to Supabase. The 17 record tests use jsdom and do not verify
+real browser layout or native dialog focus trapping.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Hosting
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Use Vercel with repository root directory `frontend` and framework Next.js.
+The application needs server rendering and route handlers; do not use static
+export hosting. Use Production environment variables `API_BASE_URL` and
+`APP_ORIGIN`, and redeploy after changing them.
+
+See the [full deployment guide](../docs/deployment.md),
+[architecture](../docs/architecture.md), and
+[release checklist](../docs/release-checklist.md).

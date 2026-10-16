@@ -1,56 +1,101 @@
 # Student Management System
 
-A full-stack student management application using Next.js,
-Spring Boot, and Supabase PostgreSQL.
+A full-stack application built with Next.js, Spring Boot, and Supabase
+PostgreSQL. Students and courses support CRUD, search, sorting, and pagination.
+JWT authentication separates USER view access from ADMIN management access.
 
-## Current Status
+## Status and deliverables
 
-## Current Status
+The core application and UI improvements are implemented. Release documentation,
+Docker configuration, a Render Blueprint, and automated GitHub checks are
+prepared. Public deployment and the final browser checklist remain to be
+completed; this repository does not yet claim a verified live deployment.
 
-Days 1 and 2 completed: environment setup, database tables,
-entities, repositories, and Students/Courses CRUD APIs.
-
-- Next.js frontend initialized
-- Spring Boot backend connected to Supabase PostgreSQL
-- Students, Courses, and Users tables created with RLS enabled
-- Students and Courses CRUD APIs verified using Postman
-- Basic validation and duplicate prevention implemented
-
-Frontend integration and authentication remain for later stages.
-
-See [Day 2 API and Test Results](docs/day-2-testing.md).
-
-## Project Structure
-
-| Directory | Purpose |
+| Item | State |
 |---|---|
-| frontend/ | Next.js application |
-| backend/ | Spring Boot REST API |
-| docs/ | Project documentation |
+| Backend CRUD, Supabase schema and integration | Implemented |
+| Dashboard, Students, Courses, login and registration | Implemented |
+| JWT, BCrypt, roles, validation and safe errors | Implemented |
+| Responsive record cards, dialogs, search/sort/paging | Implemented |
+| Automated test coverage | 48 backend tests, 17 record tests, 13 frontend HTTP integration groups |
+| Frontend production URL | Pending deployment |
+| Backend production / health URL | Pending deployment |
 
-See [System Architecture](docs/architecture.md).
+The assignment explicitly lists Days 1–4 and then section **6. Final
+Deliverables**. See the [release checklist](docs/release-checklist.md) for the
+remaining handover work and current verification evidence.
 
-## Prerequisites
+## Documentation
 
-- Node.js 22
-- npm
-- JDK 21
-- Git
-- A Supabase project and its database credentials
+- [System architecture and authentication flow](docs/architecture.md)
+- [Vercel + Render + Supabase deployment guide](docs/deployment.md)
+- [Release checklist and submission record](docs/release-checklist.md)
+- [CRUD API examples and Day 2 test results](docs/day-2-testing.md)
+- [Authentication endpoints, roles and Day 4 tests](docs/day-4-auth-testing.md)
+- [Record management behavior and visual checks](docs/record-management-improvements.md)
+- [Frontend setup and scripts](frontend/README.md)
 
-The backend includes a Maven wrapper; a separate Maven installation
-is not required.
+## Requirements
 
-## Clone the Repository
+- Node.js 22 and npm.
+- JDK 21. The backend includes its Maven wrapper.
+- Git and an existing Supabase PostgreSQL project.
+- Docker only for a local container build; hosted Docker builds run in CI/Render.
+
+## Repository layout
+
+| Path | Purpose |
+|---|---|
+| `frontend/` | Next.js App Router, server-side API relay, and browser UI |
+| `backend/` | Spring Boot API, Spring Security, JPA entities and repositories |
+| `backend/sql/` | Initial database schema for a fresh project |
+| `docs/` | Architecture, testing, deployment and release documentation |
+| `render.yaml` | Prepared Docker backend service configuration |
+| `.github/workflows/verify.yml` | Automated frontend/backend checks and Docker build |
+
+## Local setup
 
 ```bash
 git clone https://github.com/AaqibAR/student-management-system.git
 cd student-management-system
 ```
 
-## Run the Frontend
+### Database
 
-From the repository root:
+Use the existing configured Supabase project. For a **fresh database only**, run
+`backend/sql/001_create_tables.sql` once in the Supabase SQL Editor. It creates
+`app.students`, `app.courses`, and `app.users` and enables RLS. Do not rerun it
+to recreate existing data. Hibernate validates the schema without changing it.
+
+Copy the actual Session pooler host and username from Supabase's Connect panel.
+The JDBC connection uses port 5432 with SSL and a separate database password.
+
+### Backend terminal (macOS zsh)
+
+From the repository root, replace the host and username placeholders:
+
+```bash
+cd backend
+export JAVA_HOME=$(/usr/libexec/java_home -v 21)
+export PATH="$JAVA_HOME/bin:$PATH"
+chmod +x mvnw
+export DB_URL='jdbc:postgresql://YOUR_SESSION_POOLER_HOST:5432/postgres?sslmode=require'
+export DB_USERNAME='postgres.YOUR_PROJECT_REF'
+read -s "DB_PASSWORD?Enter your Supabase database password: "
+export DB_PASSWORD
+export JWT_SECRET="$(openssl rand -base64 32)"
+./mvnw spring-boot:run
+```
+
+Generate `JWT_SECRET` once per terminal session and reuse it when restarting.
+Changing the value invalidates existing tokens. A new terminal needs its
+environment variables again. `backend/.env.example` documents the variables;
+Spring Boot does not automatically load that file. The default local port is
+8080; `PORT` can override it for hosting.
+
+### Frontend terminal
+
+In another terminal, from the repository root:
 
 ```bash
 cd frontend
@@ -59,70 +104,77 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Open http://localhost:3000.
+Copy the example only for initial setup; retain an existing configured
+`.env.local`. It should set `API_BASE_URL=http://localhost:8080` and
+`APP_ORIGIN=http://localhost:3000` for the normal local setup. The older
+`NEXT_PUBLIC_API_BASE_URL` remains a fallback, with `API_BASE_URL` taking
+precedence.
 
-The API base URL is configured through NEXT_PUBLIC_API_BASE_URL.
-API calls will be implemented in a later stage.
+Open http://localhost:3000. Use `/register` or `/login`; protected workspace
+pages redirect anonymous users to login. Backend health is available at
+http://localhost:8080/actuator/health and should return `status: UP`.
 
-## Database Setup
+## Roles and sessions
 
-For a fresh Supabase database, run
-backend/sql/001_create_tables.sql in the Supabase SQL Editor.
+Public registration always creates USER accounts. USER can read students and
+courses; ADMIN can create, edit, and delete them. The backend enforces these
+permissions on every request, independently of frontend controls.
 
-The script creates the app schema, three tables, and enables RLS.
-Run it once; it is not intended to recreate existing tables.
+To test ADMIN, promote one deliberately selected registered account in the
+Supabase SQL Editor, replacing the placeholder with its actual email:
 
-Spring Boot uses Hibernate validation to check the entity mappings
-against the existing database schema.
-
-## Run the Backend
-
-From the repository root, in a separate macOS zsh terminal:
-
-```bash
-cd backend
-export JAVA_HOME=$(/usr/libexec/java_home -v 21)
-export PATH="$JAVA_HOME/bin:$PATH"
-chmod +x mvnw
+```sql
+UPDATE app.users
+SET role = 'ADMIN'
+WHERE email = LOWER('YOUR_REGISTERED_EMAIL')
+RETURNING id, name, email, role;
 ```
 
-Copy the full Session pooler host and username from the Supabase
-connection panel. Replace the placeholders below before running:
+Sign out and sign in again to obtain a token with the new role. Use disposable
+records for mutation tests. Passwords are BCrypt hashes; the frontend stores
+JWTs in HttpOnly cookies. Access tokens last 15 minutes, with no refresh-token
+or server-side revocation endpoint. Logout clears the browser cookie.
+
+## Repeatable checks
+
+From `frontend/`:
 
 ```bash
-export DB_URL='jdbc:postgresql://YOUR_SESSION_POOLER_HOST:5432/postgres?sslmode=require'
-export DB_USERNAME='postgres.YOUR_PROJECT_REF'
-read -s "DB_PASSWORD?Enter your Supabase database password: "
-export DB_PASSWORD
-./mvnw spring-boot:run
+npm run lint
+npm run test:records
+npm run build
+npm run test:auth
 ```
 
-The password prompt hides input. Environment variables apply to the
-current terminal session and must be supplied again in a new session.
+`test:auth` requires the production build. It starts/stops its own mock backend
+and Next server on loopback ports 8181 and 3030, and does not contact Supabase.
+Use `AUTH_TEST_BACKEND_PORT` and `AUTH_TEST_APP_PORT` to select other unused
+ports if needed.
 
-backend/.env.example documents the required variables.
-Spring Boot does not automatically load this template.
+From `backend/`, with JDK 21:
 
-## Verify Setup
+```bash
+./mvnw --batch-mode -Dtest=AuthServiceTests,JwtConfigTests,AuthSecurityTests test
+./mvnw --batch-mode -DskipTests package
+```
 
-- Frontend: http://localhost:3000
-- Backend health: http://localhost:8080/actuator/health
+The focused tests mock database access. Running the full context test instead
+requires database credentials and `JWT_SECRET`. DOM/HTTP tests do not establish
+actual browser appearance or native dialog behavior: complete the manual
+[release checklist](docs/release-checklist.md).
 
-The health response should contain "status":"UP".
-It may also list liveness and readiness groups.
+## Production configuration
 
-## Configuration Notes
+Follow the [deployment guide](docs/deployment.md) after reviewing/merging the
+release PR. Use Vercel root directory `frontend` and Render's Docker Blueprint.
+The backend remains connected to the existing Supabase project.
 
-- Database tables are created through the saved SQL script.
-- Hibernate validates the schema without modifying it.
-- Database credentials must remain outside source control.
-- Only placeholder environment templates are committed.
-- NEXT_PUBLIC_ variables are browser-visible; never store secrets in them.
+| Where | Variables |
+|---|---|
+| Vercel, Production | `API_BASE_URL`, exact `APP_ORIGIN` |
+| Render | `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `JWT_SECRET`, `FRONTEND_URL`; automatic `PORT` |
 
-## Commit Convention
-
-Use short, present-tense commit messages:
-
-- chore(frontend): initialize Next.js project
-- chore(backend): configure Spring Boot and Supabase connection
-- docs: document architecture and local setup
+Keep real secrets out of source control and `NEXT_PUBLIC_` variables. The frontend
+needs no signing secret or database password. Production cookies require HTTPS.
+The Render Free service can sleep when idle; see the documented wake-up behavior
+before a demo. Fill the public deployment links above only after live testing.
